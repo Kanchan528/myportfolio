@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>My Portfolio</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="project.css">
+<!-- 	<style>
+		.main{
+			text-align: center
+		}
+		
+	</style> -->
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4">
+				<div id="loading">
+					<img src="loading.gif" height="70px" width="70px">
+				</div>
+				<div id="mainContainer" hidden>
+					<img id="profileImage" height="140 px" width="140px">
+					<h3 id="fullname"></h3>
+					<h4 id="username"></h4>
+					<p id="bio"></p>
+					<h5 id="followersInformation"></h5>
+					<p>Check me on: <a id="githubLink">Github</a></p>
+				
+				</div>
+			</div>
+		
+			<div class="col-md-4">
+				<h1>My Project</h1>
+				<h4 id="count"></h4>
+				<ul>
+					<li id="repositories"></li>
+					
+				</ul>
+				<div class="pagination">
+					<a href="#" id="btn_prev" onclick="previousPage()" hidden> prev--<</a>
+					<a href="#" id="btn_next" onclick="nextPage()"> -->next</a>
+				</div>
+			</div>	
+		</div>
+	</div>	
+			<script>
+				let current_page=1;
+				function previousPage(){
+					if (current_page>1){
+						current_page--;
+						loadRepository();
+					}
+				}
+
+				function nextPage(){
+					current_page++;
+					loadRepository();
+				}
+
+
+				function loadRepository(){
+					if (current_page>1){
+						document.getElementById("btn_prev").hidden=false;
+
+					}
+					if(current_page==1){
+						document.getElementById("btn_prev").hidden=true;
+					}
+					document.getElementById("repositories").innerHTML="";
+					console.log(current_page);
+					fetch("https://api.github.com/users/Kanchan528/repos"+"?page="+current_page)
+					.then(response => response.json())
+					.then(function(data){
+
+					data.forEach(
+						function getName(item){
+							console.log(item["name"])
+							let repo_count="Total number of project done: "+data.length
+							document.getElementById("repositories").innerHTML+="<li>"+item["name"]+"</li>"+"<br>";
+							document.getElementById("count").textContent=repo_count
+						}
+				);
+
+				})}
+				fetch("https://api.github.com/users/Kanchan528")
+				.then(response => response.json())
+				.then(function(data){
+					console.log(data)
+					let followersCount = data["followers"]
+					let followrsInfo = "I have been followed by " + data['followers'] + " people."
+					document.getElementById("profileImage").src=data['avatar_url']
+					document.getElementById("fullname").textContent=data['name']
+					document.getElementById("username").textContent=data['login']
+					document.getElementById("bio").textContent=data['bio']
+					document.getElementById("followersInformation").textContent=followrsInfo
+					document.getElementById("githubLink").href=data['html_url']
+					document.getElementById("mainContainer").hidden=false
+					document.getElementById("loading").hidden=true
+					loadRepository();
+				})
+
+			</script>
+</body>
+</html>
